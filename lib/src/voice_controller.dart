@@ -50,6 +50,7 @@ class VoiceController extends MyTicker {
   StreamSubscription? playerStateStream;
   double? downloadProgress = 0;
   final int noiseCount;
+  final Map<String, String>? headers;
 
   /// Gets the current playback position of the voice.
   double get currentMillSeconds {
@@ -86,10 +87,11 @@ class VoiceController extends MyTicker {
     required this.onComplete,
     required this.onPause,
     required this.onPlaying,
-    this.noiseCount = 24,
+    this.noiseCount = 32,
     this.onError,
     this.randoms,
     this.cacheKey,
+    this.headers,
   }) {
     if (randoms?.isEmpty ?? true) _setRandoms();
     animController = AnimationController(
@@ -208,7 +210,7 @@ class VoiceController extends MyTicker {
       return audioSrc;
     }
     final p =
-        await DefaultCacheManager().getSingleFile(audioSrc, key: cacheKey);
+        await DefaultCacheManager().getSingleFile(audioSrc, key: cacheKey, headers: headers);
     return p.path;
   }
 
@@ -217,7 +219,7 @@ class VoiceController extends MyTicker {
       throw Exception("This method is not applicable for local files.");
     }
     return DefaultCacheManager()
-        .getFileStream(audioSrc, key: cacheKey, withProgress: true);
+        .getFileStream(audioSrc, key: cacheKey, withProgress: true, headers: headers);
   }
 
   void cancelDownload() {

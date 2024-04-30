@@ -20,17 +20,20 @@ class Noises extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: rList
-          .map(
-            (e) => SingleNoise(
-              activeSliderColor: activeSliderColor,
-              height: e,
-            ),
-          )
-          .toList(),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: rList
+            .map(
+              (e) => SingleNoise(
+                activeSliderColor: activeSliderColor,
+                height: e,
+              ),
+            )
+            .toList(),
+      ),
     );
   }
 }

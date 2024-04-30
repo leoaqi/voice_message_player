@@ -33,7 +33,7 @@ class _SingleNoiseState extends State<SingleNoise> {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: .2.w()),
-      width: .56.w(),
+      width: 4,
       height: widget.height,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(1000),

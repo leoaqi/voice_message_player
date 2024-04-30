@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:sizer/sizer.dart';
 import 'package:voice_message_package/voice_message_package.dart';
 
@@ -20,27 +21,38 @@ class MyApp extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(height: 50.h),
-                    VoiceMessageView(
-                      controller: VoiceController(
-                        audioSrc:
-                            'https://dl.solahangs.com/Music/1403/02/H/128/Hiphopologist%20-%20Shakkak%20%28128%29.mp3',
-                        maxDuration: const Duration(seconds: 10),
-                        isFile: false,
-                        onComplete: () {
-                          /// do something on complete
-                        },
-                        onPause: () {
-                          /// do something on pause
-                        },
-                        onPlaying: () {
-                          /// do something on playing
-                        },
-                        onError: (err) {
-                          /// do somethin on error
-                        },
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 18),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: VoiceMessageView(
+                          controller: VoiceController(
+                            audioSrc:
+                                'https://dl.solahangs.com/Music/1403/02/H/128/Hiphopologist%20-%20Shakkak%20%28128%29.mp3',
+                            maxDuration: const Duration(seconds: 10),
+                            isFile: false,
+                            onComplete: () {
+                              /// do something on complete
+                            },
+                            onPause: () {
+                              /// do something on pause
+                            },
+                            onPlaying: () {
+                              /// do something on playing
+                            },
+                            onError: (err) {
+                              /// do somethin on error
+                            },
+                          ),
+                          innerPadding: 12,
+                          cornerRadius: 20,
+                          size: 28,
+                          deleteButton: const Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Icon(Icons.delete),
+                          ),
+                        ),
                       ),
-                      innerPadding: 12,
-                      cornerRadius: 20,
                     ),
                     SizedBox(height: 80.h),
                   ],
