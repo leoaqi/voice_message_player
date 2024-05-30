@@ -314,7 +314,7 @@ class VoiceController extends MyTicker {
     try {
       /// get the max duration from the path or cloud
       final maxDuration =
-          isFile ? await _player.setFilePath(path) : await _player.setUrl(path);
+          isFile ? await _player.setFilePath(path) : await _player.setUrl(path, headers: headers);
       if (maxDuration != null) {
         this.maxDuration = maxDuration;
         animController.duration = maxDuration;
