@@ -50,6 +50,7 @@ class VoiceController extends MyTicker {
   StreamSubscription? playerStateStream;
   double? downloadProgress = 0;
   final int noiseCount;
+  String? pathFileFromDownload;
   final Map<String, String>? headers;
 
   /// Gets the current playback position of the voice.
@@ -119,17 +120,23 @@ class VoiceController extends MyTicker {
         await startPlaying(path);
         onPlaying();
       } else {
-        downloadStreamSubscription = _getFileFromCacheWithProgress()
-            .listen((FileResponse fileResponse) async {
-          if (fileResponse is FileInfo) {
-            await startPlaying(fileResponse.file.path);
-            onPlaying();
-          } else if (fileResponse is DownloadProgress) {
-            _updateUi();
-            // print(downloadProgress);
-            downloadProgress = fileResponse.progress;
-          }
-        });
+        if (pathFileFromDownload != null) {
+          await startPlaying(pathFileFromDownload!);
+          onPlaying();
+        } else {
+          downloadStreamSubscription = _getFileFromCacheWithProgress()
+              .listen((FileResponse fileResponse) async {
+            if (fileResponse is FileInfo) {
+              pathFileFromDownload = (fileResponse.file.path);
+              await startPlaying(fileResponse.file.path);
+              onPlaying();
+            } else if (fileResponse is DownloadProgress) {
+              _updateUi();
+              // print(downloadProgress);
+              downloadProgress = fileResponse.progress;
+            }
+          });
+        }
       }
     } catch (err) {
       playStatus = PlayStatus.downloadError;
@@ -173,14 +180,17 @@ class VoiceController extends MyTicker {
 
   /// Starts playing the voice.
   Future startPlaying(String path) async {
-    Uri audioUri = isFile ? Uri.file(audioSrc) : Uri.parse(audioSrc);
-    await _player.setAudioSource(
+    if (_player.audioSource == null) {
+      Uri audioUri = isFile ? Uri.file(audioSrc) : Uri.parse(audioSrc);
+      await _player.setAudioSource(
         AudioSource.uri(audioUri),
-        preload: false,
+        preload: true,
         initialPosition: currentDuration,
       );
+    }
     _player.play();
     _player.setSpeed(speed.getSpeed);
+    playStatus = PlayStatus.playing;
   }
 
   Future<void> dispose() async {
