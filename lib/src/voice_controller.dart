@@ -116,7 +116,6 @@ class VoiceController extends MyTicker {
       if (isFile) {
         final path = await _getFileFromCache();
         await startPlaying(path);
-        onPlaying.call();
       } else {
         if (pathFileFromDownload != null) {
           final filepath = await DefaultCacheManager().getSingleFile(
@@ -139,7 +138,6 @@ class VoiceController extends MyTicker {
             if (fileResponse is FileInfo) {
               pathFileFromDownload = (fileResponse.file.path);
               await startPlaying(fileResponse.file.path);
-              onPlaying.call();
             } else if (fileResponse is DownloadProgress) {
               _updateUi();
               // print(downloadProgress);
@@ -148,6 +146,7 @@ class VoiceController extends MyTicker {
           });
         }
       }
+      onPlaying.call();
     } catch (err) {
       playStatus = PlayStatus.downloadError;
       _updateUi();
@@ -201,6 +200,7 @@ class VoiceController extends MyTicker {
     await _player.play();
     _player.setSpeed(speed.getSpeed);
     playStatus = PlayStatus.playing;
+    onPlaying.call();
   }
 
   Future<void> dispose() async {
