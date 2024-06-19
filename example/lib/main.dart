@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
                           controller: VoiceController(
                             cacheKey: '1',
                             audioSrc:
-                                'https://dl.solahangs.com/Music/1403/02/H/128/Hiphopologist%20-%20Shakkak%20%28128%29.mp3',
+                                'https://getsamplefiles.com/download/m4a/sample-3.m4a',
                             maxDuration: const Duration(minutes: 10),
                             isFile: false,
                             onComplete: () {

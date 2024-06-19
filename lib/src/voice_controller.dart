@@ -113,17 +113,27 @@ class VoiceController extends MyTicker {
 
   Future play() async {
     try {
-      playStatus = PlayStatus.downloading;
-      _updateUi();
       if (isFile) {
         final path = await _getFileFromCache();
         await startPlaying(path);
         onPlaying();
       } else {
         if (pathFileFromDownload != null) {
-          await startPlaying(pathFileFromDownload!);
-          onPlaying();
+          final filepath = await DefaultCacheManager().getSingleFile(
+              pathFileFromDownload!,
+              key: cacheKey,
+              headers: headers);
+
+          await _player.setAudioSource(
+            AudioSource.uri(Uri.file(filepath.path)),
+            preload: true,
+            initialPosition: currentDuration,
+          );
+
+          _player.play();
         } else {
+          playStatus = PlayStatus.downloading;
+          _updateUi();
           downloadStreamSubscription = _getFileFromCacheWithProgress()
               .listen((FileResponse fileResponse) async {
             if (fileResponse is FileInfo) {
@@ -188,7 +198,7 @@ class VoiceController extends MyTicker {
         initialPosition: currentDuration,
       );
     }
-    _player.play();
+    await _player.play();
     _player.setSpeed(speed.getSpeed);
     playStatus = PlayStatus.playing;
   }
@@ -209,10 +219,12 @@ class VoiceController extends MyTicker {
   }
 
   /// Pauses the voice playback.
-  void pausePlaying() {
-    _player.pause();
+  void pausePlaying() async {
     playStatus = PlayStatus.pause;
-    _updateUi();
+    // _updateUi();
+    await _player.pause();
+    playStatus = PlayStatus.pause;
+    // _updateUi();
     onPause();
   }
 
@@ -243,11 +255,13 @@ class VoiceController extends MyTicker {
   void _listenToPlayerState() {
     playerStateStream = _player.playerStateStream.listen((event) async {
       if (event.processingState == ProcessingState.completed) {
-        // await _player.stop();
-        // currentDuration = Duration.zero;
-        // playStatus = PlayStatus.init;
-        // animController.reset();
-        // _updateUi();
+        playStatus = PlayStatus.stop;
+        await _player.stop();
+        currentDuration = Duration.zero;
+        await _player.seek(Duration.zero);
+        animController.reset();
+        playStatus = PlayStatus.stop;
+        _updateUi();
         // onComplete(id);
       } else if (event.playing) {
         playStatus = PlayStatus.playing;
