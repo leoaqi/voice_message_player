@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -117,6 +118,7 @@ class VoiceController extends MyTicker {
         final path = await _getFileFromCache();
         await startPlaying(path);
       } else {
+        print('LL :: pathFileFromDownload $pathFileFromDownload');
         if (pathFileFromDownload != null) {
           final filepath = await DefaultCacheManager().getSingleFile(
               pathFileFromDownload!,
@@ -124,7 +126,7 @@ class VoiceController extends MyTicker {
               headers: headers);
 
           await _player.setAudioSource(
-            AudioSource.uri(Uri.file(filepath.path)),
+            AudioSource.uri(Platform.isIOS? Uri.parse(audioSrc): Uri.file(filepath.path)),
             preload: true,
             initialPosition: currentDuration,
           );
@@ -137,6 +139,7 @@ class VoiceController extends MyTicker {
               .listen((FileResponse fileResponse) async {
             if (fileResponse is FileInfo) {
               pathFileFromDownload = (fileResponse.file.path);
+              print(pathFileFromDownload);
               await startPlaying(fileResponse.file.path);
             } else if (fileResponse is DownloadProgress) {
               _updateUi();
