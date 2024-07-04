@@ -116,7 +116,15 @@ class VoiceController extends MyTicker {
     try {
       if (isFile) {
         final path = await _getFileFromCache();
-        await startPlaying(path);
+        await _player.setAudioSource(
+          AudioSource.uri(Uri.file(path)),
+          preload: true,
+          initialPosition: currentDuration,
+        );
+        await _player.play();
+        _player.setSpeed(speed.getSpeed);
+        playStatus = PlayStatus.playing;
+        onPlaying.call();
       } else {
         if (pathFileFromDownload != null) {
           final filepath = await DefaultCacheManager().getSingleFile(
